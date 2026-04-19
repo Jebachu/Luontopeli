@@ -17,7 +17,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    // 🟢 ROOM DATABASE
     @Provides
     @Singleton
     fun provideDatabase(
@@ -28,23 +27,20 @@ object AppModule {
             AppDatabase::class.java,
             "luontopeli_database"
         )
-            .fallbackToDestructiveMigration() // 🔥 ESTÄÄ sun schema-crashit devissä
+            .fallbackToDestructiveMigration()
             .build()
     }
 
-    // 🟢 DAO: NatureSpot
     @Provides
     fun provideNatureSpotDao(db: AppDatabase): NatureSpotDao {
         return db.natureSpotDao()
     }
 
-    // 🟢 DAO: WalkSession (pidetty ennallaan)
     @Provides
     fun provideWalkSessionDao(db: AppDatabase): WalkSessionDao {
         return db.walkSessionDao()
     }
-
-    // 🟢 REPOSITORY (TÄRKEÄ LISÄYS)
+    
     @Provides
     @Singleton
     fun provideNatureSpotRepository(

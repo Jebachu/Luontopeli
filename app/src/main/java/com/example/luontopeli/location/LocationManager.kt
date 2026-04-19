@@ -68,10 +68,14 @@ class LocationManager @Inject constructor(
                 else -> return
             }
 
+            locationManager.getLastKnownLocation(provider)?.let { lastKnown ->
+                _currentLocation.value = lastKnown
+            }
+
             locationManager.requestLocationUpdates(
                 provider,
-                3000L,
-                5f,
+                1000L,
+                1f,
                 locationListener
             )
 

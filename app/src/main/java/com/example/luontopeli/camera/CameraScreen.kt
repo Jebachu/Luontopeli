@@ -24,15 +24,28 @@ import com.example.luontopeli.viewmodel.CameraViewModel
 
 @Composable
 fun CameraScreen(
-    viewModel: CameraViewModel = hiltViewModel()
+    viewModel: CameraViewModel = hiltViewModel(),
+    onNavigateBack: () -> Unit
 ) {
 
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    val imagePath by viewModel.imagePath.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState(initial = false)
+    val navigateBack by viewModel.navigateBack.collectAsState(initial = false)
 
+    // Koska ViewModel ei sisällä imagePath-arvoa, luodaan se tähän:
+    var imagePath by remember { mutableStateOf<String?>(null) }
+
+    // Kun kuva on tallennettu ja navigateBack = true → palataan takaisin
+    LaunchedEffect(navigateBack) {
+        if (navigateBack) {
+            onNavigateBack()
+            viewModel.resetNavigation()
+        }
+    }
+
+    // Kameralupa
     var hasPermission by remember {
         mutableStateOf(
             ContextCompat.checkSelfPermission(
@@ -134,7 +147,7 @@ fun CameraScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Button(onClick = { viewModel.clear() }) {
+                Button(onClick = { imagePath = null }) {
                     Text("Ota uusi kuva")
                 }
             }

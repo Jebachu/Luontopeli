@@ -14,23 +14,32 @@ fun LuontopeliBottomBar(navController: NavController) {
         Screen.Stats
     )
 
+    val navBackStackEntry = navController.currentBackStackEntryAsState().value
+    val currentRoute = navBackStackEntry?.destination?.route
+
     NavigationBar {
-        val currentRoute =
-            navController.currentBackStackEntryAsState().value?.destination?.route
 
         screens.forEach { screen ->
+
             NavigationBarItem(
                 icon = { Icon(screen.icon, contentDescription = screen.title) },
                 label = { Text(screen.title) },
                 selected = currentRoute == screen.route,
                 onClick = {
-                    navController.navigate(screen.route) {
-                        popUpTo("map")
-                        launchSingleTop = true
+
+                    if (currentRoute != screen.route) {
+                        navController.navigate(screen.route) {
+
+                            popUpTo(Screen.Map.route) {
+                                saveState = true
+                            }
+
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     }
                 }
             )
         }
     }
 }
-

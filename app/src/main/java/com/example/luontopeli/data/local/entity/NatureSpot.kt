@@ -18,7 +18,6 @@ data class NatureSpot(
 
     val imagePath: String,
 
-    // ML Kit -tieto (ei pakollinen, mutta OK säilyttää)
     val plantLabel: String? = null,
 
     val confidence: Float? = null,

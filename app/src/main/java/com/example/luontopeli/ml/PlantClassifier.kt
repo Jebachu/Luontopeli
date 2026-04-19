@@ -18,31 +18,14 @@ class PlantClassifier {
             .build()
     )
 
-    private val natureKeywords = setOf(
-        "plant", "flower", "tree", "leaf", "moss", "grass",
-        "fungus", "mushroom", "forest", "nature"
-    )
-
-    // ✅ OPETTAJAN MALLI: palautetaan suoraan labelit
-    suspend fun classify(imageUri: Uri, context: Context): List<ImageLabel> {
-        return suspendCancellableCoroutine { cont ->
+    suspend fun classify(uri: Uri, context: Context): List<ImageLabel> =
+        suspendCancellableCoroutine { cont ->
             try {
-                val image = InputImage.fromFilePath(context, imageUri)
+                val image = InputImage.fromFilePath(context, uri)
 
                 labeler.process(image)
                     .addOnSuccessListener { labels ->
-
-                        // suodatetaan luontoon liittyvät (ei pakollinen, mutta ok)
-                        val filtered = labels.filter { label ->
-                            natureKeywords.any { keyword ->
-                                label.text.contains(keyword, ignoreCase = true)
-                            }
-                        }
-
-                        // jos löytyy luontotuloksia → ne, muuten kaikki labelit
-                        val result = if (filtered.isNotEmpty()) filtered else labels
-
-                        cont.resume(result)
+                        cont.resume(labels)
                     }
                     .addOnFailureListener {
                         cont.resumeWithException(it)
@@ -52,7 +35,6 @@ class PlantClassifier {
                 cont.resumeWithException(e)
             }
         }
-    }
 
     fun close() {
         labeler.close()

@@ -3,9 +3,7 @@ package com.example.luontopeli.data.local.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-/**
- * Room-entiteetti kävelysessiolle.
- */
+
 @Entity(tableName = "walk_sessions")
 data class WalkSession(
 
