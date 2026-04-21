@@ -27,16 +27,10 @@ fun CameraScreen(
     viewModel: CameraViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit
 ) {
-
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-
     val isLoading by viewModel.isLoading.collectAsState(initial = false)
     val navigateBack by viewModel.navigateBack.collectAsState(initial = false)
-
-
-    var imagePath by remember { mutableStateOf<String?>(null) }
-
 
     LaunchedEffect(navigateBack) {
         if (navigateBack) {
@@ -45,7 +39,6 @@ fun CameraScreen(
         }
     }
 
-    // Kameralupa
     var hasPermission by remember {
         mutableStateOf(
             ContextCompat.checkSelfPermission(
@@ -70,87 +63,51 @@ fun CameraScreen(
             Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Button(onClick = {
-                launcher.launch(Manifest.permission.CAMERA)
-            }) {
+            Button(onClick = { launcher.launch(Manifest.permission.CAMERA) }) {
                 Text("Anna kameran lupa")
             }
         }
         return
     }
 
-    val imageCapture = remember {
-        ImageCapture.Builder().build()
-    }
+    val imageCapture = remember { ImageCapture.Builder().build() }
 
     Box(modifier = Modifier.fillMaxSize()) {
+        AndroidView(
+            factory = { ctx ->
+                val previewView = PreviewView(ctx)
+                val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
 
-        if (imagePath == null) {
+                cameraProviderFuture.addListener({
+                    val cameraProvider = cameraProviderFuture.get()
+                    val preview = Preview.Builder().build().also {
+                        it.setSurfaceProvider(previewView.surfaceProvider)
+                    }
 
-            AndroidView(
-                factory = { ctx ->
-                    val previewView = PreviewView(ctx)
+                    try {
+                        cameraProvider.unbindAll()
+                        cameraProvider.bindToLifecycle(
+                            lifecycleOwner,
+                            CameraSelector.DEFAULT_BACK_CAMERA,
+                            preview,
+                            imageCapture
+                        )
+                    } catch (_: Exception) { }
 
-                    val cameraProviderFuture =
-                        ProcessCameraProvider.getInstance(ctx)
+                }, ContextCompat.getMainExecutor(ctx))
 
-                    cameraProviderFuture.addListener({
+                previewView
+            },
+            modifier = Modifier.fillMaxSize()
+        )
 
-                        val cameraProvider = cameraProviderFuture.get()
-
-                        val preview = Preview.Builder().build().also {
-                            it.setSurfaceProvider(previewView.surfaceProvider)
-                        }
-
-                        try {
-                            cameraProvider.unbindAll()
-
-                            cameraProvider.bindToLifecycle(
-                                lifecycleOwner,
-                                CameraSelector.DEFAULT_BACK_CAMERA,
-                                preview,
-                                imageCapture
-                            )
-
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-
-                    }, ContextCompat.getMainExecutor(ctx))
-
-                    previewView
-                },
-                modifier = Modifier.fillMaxSize()
-            )
-
-            Button(
-                onClick = {
-                    viewModel.takePhoto(context, imageCapture)
-                },
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(24.dp)
-            ) {
-                Text(if (isLoading) "Tallennetaan..." else "Ota kuva")
-            }
-
-        } else {
-
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("Kuva tallennettu")
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(imagePath ?: "")
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Button(onClick = { imagePath = null }) {
-                    Text("Ota uusi kuva")
-                }
-            }
+        Button(
+            onClick = { viewModel.takePhoto(context, imageCapture) },
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(24.dp)
+        ) {
+            Text(if (isLoading) "Tallennetaan..." else "Ota kuva")
         }
     }
 }

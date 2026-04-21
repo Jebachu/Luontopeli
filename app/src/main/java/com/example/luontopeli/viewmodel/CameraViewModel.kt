@@ -24,7 +24,7 @@ import javax.inject.Inject
 class CameraViewModel @Inject constructor(
     private val repository: NatureSpotRepository,
     private val locationManager: LocationManager,
-    private val classifier: PlantClassifier   // 🔥 LISÄTTY
+    private val classifier: PlantClassifier
 ) : ViewModel() {
 
     private val _isLoading = MutableStateFlow(false)
@@ -34,7 +34,6 @@ class CameraViewModel @Inject constructor(
     val navigateBack = _navigateBack.asStateFlow()
 
     fun takePhoto(context: Context, imageCapture: ImageCapture) {
-
         _isLoading.value = true
 
         val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
@@ -51,21 +50,17 @@ class CameraViewModel @Inject constructor(
             object : ImageCapture.OnImageSavedCallback {
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-
                     viewModelScope.launch {
-
-                        // 🔥 ML KIT TUNNISTUS LISÄTTY
                         val uri = Uri.fromFile(file)
                         val labels = classifier.classify(uri)
                         val bestLabel = labels.maxByOrNull { it.confidence }?.text ?: "Unknown"
 
                         val location = locationManager.currentLocation.value
-
                         val lat = location?.latitude ?: 0.0
                         val lon = location?.longitude ?: 0.0
 
                         val spot = NatureSpot(
-                            name = bestLabel,              // 🔥 TÄSSÄ OLI "Luontokohde"
+                            name = bestLabel,
                             latitude = lat,
                             longitude = lon,
                             imagePath = file.absolutePath

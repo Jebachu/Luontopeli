@@ -32,7 +32,6 @@ fun MapScreen(
     mapViewModel: MapViewModel = hiltViewModel(),
     walkViewModel: WalkViewModel = hiltViewModel()
 ) {
-
     val context = LocalContext.current
 
     val permissionState = rememberMultiplePermissionsState(
@@ -76,11 +75,7 @@ fun MapScreen(
 
     if (!permissionState.allPermissionsGranted) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Button(
-                onClick = {
-                    permissionState.launchMultiplePermissionRequest()
-                }
-            ) {
+            Button(onClick = { permissionState.launchMultiplePermissionRequest() }) {
                 Text("Myönnä sijaintilupa")
             }
         }
@@ -88,7 +83,6 @@ fun MapScreen(
     }
 
     Box(Modifier.fillMaxSize()) {
-
         AndroidView(
             factory = {
                 mapView.apply {
@@ -101,10 +95,8 @@ fun MapScreen(
             modifier = Modifier.fillMaxSize(),
             update = { map ->
 
-
                 map.overlays.removeAll { it is Polyline }
 
-                // Reitti
                 if (routePoints.size > 1) {
                     val line = Polyline().apply {
                         setPoints(routePoints)
@@ -113,28 +105,22 @@ fun MapScreen(
                     map.overlays.add(line)
                 }
 
-                // Pinnit
                 spots.forEach { spot ->
                     if (spot.latitude != 0.0 && spot.longitude != 0.0) {
-
                         val marker = Marker(map).apply {
                             position = GeoPoint(spot.latitude, spot.longitude)
                             title = spot.name
-
                             setOnMarkerClickListener { _, _ ->
                                 selectedSpot = spot
                                 true
                             }
                         }
-
                         map.overlays.add(marker)
                     }
                 }
 
                 currentLocation?.let { loc ->
-                    map.controller.setCenter(
-                        GeoPoint(loc.latitude, loc.longitude)
-                    )
+                    map.controller.setCenter(GeoPoint(loc.latitude, loc.longitude))
                 }
 
                 map.invalidate()
@@ -153,9 +139,7 @@ fun MapScreen(
         FloatingActionButton(
             onClick = {
                 currentLocation?.let {
-                    mapView.controller.animateTo(
-                        GeoPoint(it.latitude, it.longitude)
-                    )
+                    mapView.controller.animateTo(GeoPoint(it.latitude, it.longitude))
                 }
             },
             modifier = Modifier
@@ -171,7 +155,6 @@ fun MapScreen(
                 .padding(12.dp)
         ) {
             Column(Modifier.padding(12.dp)) {
-
                 val session = walkViewModel.currentSession.collectAsState().value
 
                 Text("Askeleet: ${session?.stepCount ?: 0}")

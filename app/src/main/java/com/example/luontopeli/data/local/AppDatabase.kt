@@ -28,15 +28,13 @@ abstract class AppDatabase : RoomDatabase() {
         private var INSTANCE: AppDatabase? = null
 
         fun getDatabase(context: Context): AppDatabase {
-
             return INSTANCE ?: synchronized(this) {
-
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
                     "luontopeli_database"
                 )
-                    .fallbackToDestructiveMigration() // 🔥 resettaa vanhan scheman
+                    .fallbackToDestructiveMigration()
                     .build()
 
                 INSTANCE = instance

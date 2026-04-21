@@ -12,7 +12,6 @@ import com.example.luontopeli.viewmodel.StatsViewModel
 fun StatsScreen(
     viewModel: StatsViewModel = hiltViewModel()
 ) {
-
     val stats by viewModel.stats.collectAsState(initial = com.example.luontopeli.viewmodel.StatsUiState())
 
     Column(
@@ -21,7 +20,6 @@ fun StatsScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-
         Text(
             text = "📊 Tilastot",
             style = MaterialTheme.typography.headlineMedium

@@ -16,7 +16,6 @@ class StepCounterManager @Inject constructor(
     private val sensorManager =
         context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
-    // ✅ Käytetään luotettavampaa sensoria
     private val stepSensor: Sensor? =
         sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
 

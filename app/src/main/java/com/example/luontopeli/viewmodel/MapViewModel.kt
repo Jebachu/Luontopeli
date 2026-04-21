@@ -17,7 +17,6 @@ class MapViewModel @Inject constructor(
     private val locationManager: LocationManager
 ) : ViewModel() {
 
-    // 🟢 Nyt varmasti reaaliaikainen päivitys
     val spots: StateFlow<List<NatureSpot>> =
         repository.getAllSpots()
             .stateIn(

@@ -16,7 +16,6 @@ import com.example.luontopeli.viewmodel.DiscoverViewModel
 fun DiscoverScreen(
     viewModel: DiscoverViewModel = hiltViewModel()
 ) {
-
     val spots by viewModel.spots.collectAsState(initial = emptyList())
 
     if (spots.isEmpty()) {
@@ -36,17 +35,14 @@ fun DiscoverScreen(
     ) {
         items(
             items = spots,
-            key = { it.id } // toimii koska Room generoi id:n
+            key = { it.id }
         ) { spot ->
-
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
                     modifier = Modifier.padding(12.dp)
                 ) {
-
                     Text(
                         text = spot.name,
                         style = MaterialTheme.typography.titleMedium
@@ -55,7 +51,7 @@ fun DiscoverScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     AsyncImage(
-                        model = spot.imagePath ?: "",
+                        model = spot.imagePath,
                         contentDescription = null,
                         modifier = Modifier
                             .fillMaxWidth()

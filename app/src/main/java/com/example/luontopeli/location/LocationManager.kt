@@ -28,15 +28,10 @@ class LocationManager @Inject constructor(
     private var isTracking = false
 
     private val locationListener = object : LocationListener {
-
         override fun onLocationChanged(location: Location) {
-
             _currentLocation.value = location
-
             val newPoint = GeoPoint(location.latitude, location.longitude)
-
             val last = _routePoints.value.lastOrNull()
-
             if (last == null ||
                 last.latitude != newPoint.latitude ||
                 last.longitude != newPoint.longitude
@@ -61,10 +56,8 @@ class LocationManager @Inject constructor(
             val provider = when {
                 locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER) ->
                     android.location.LocationManager.GPS_PROVIDER
-
                 locationManager.isProviderEnabled(android.location.LocationManager.NETWORK_PROVIDER) ->
                     android.location.LocationManager.NETWORK_PROVIDER
-
                 else -> return
             }
 
