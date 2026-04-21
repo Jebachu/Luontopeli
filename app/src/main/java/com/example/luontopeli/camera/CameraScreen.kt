@@ -34,10 +34,10 @@ fun CameraScreen(
     val isLoading by viewModel.isLoading.collectAsState(initial = false)
     val navigateBack by viewModel.navigateBack.collectAsState(initial = false)
 
-    // Koska ViewModel ei sisällä imagePath-arvoa, luodaan se tähän:
+
     var imagePath by remember { mutableStateOf<String?>(null) }
 
-    // Kun kuva on tallennettu ja navigateBack = true → palataan takaisin
+
     LaunchedEffect(navigateBack) {
         if (navigateBack) {
             onNavigateBack()

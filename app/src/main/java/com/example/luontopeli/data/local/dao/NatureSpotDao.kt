@@ -11,11 +11,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface NatureSpotDao {
 
-    // 🟢 Kaikki havainnot (EI SUODATUSTA)
     @Query("SELECT * FROM nature_spots ORDER BY timestamp DESC")
     fun getAll(): Flow<List<NatureSpot>>
 
-    // 🗺️ Sama data kartalle (ei enää 0.0-suodatusta)
     @Query("SELECT * FROM nature_spots ORDER BY timestamp DESC")
     fun getSpotsWithLocation(): Flow<List<NatureSpot>>
 

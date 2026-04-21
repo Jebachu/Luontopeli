@@ -34,10 +34,14 @@ fun DiscoverScreen(
         contentPadding = PaddingValues(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(spots, key = { it.id }) { spot ->
+        items(
+            items = spots,
+            key = { it.id } // toimii koska Room generoi id:n
+        ) { spot ->
 
             Card(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
             ) {
                 Column(
                     modifier = Modifier.padding(12.dp)
@@ -51,7 +55,7 @@ fun DiscoverScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     AsyncImage(
-                        model = spot.imagePath,
+                        model = spot.imagePath ?: "",
                         contentDescription = null,
                         modifier = Modifier
                             .fillMaxWidth()

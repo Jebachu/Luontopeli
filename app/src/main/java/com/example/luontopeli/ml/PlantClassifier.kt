@@ -10,15 +10,17 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-class PlantClassifier {
+class PlantClassifier(
+    private val context: Context
+) {
 
     private val labeler = ImageLabeling.getClient(
         ImageLabelerOptions.Builder()
-            .setConfidenceThreshold(0.5f)
+            .setConfidenceThreshold(0.3f)
             .build()
     )
 
-    suspend fun classify(uri: Uri, context: Context): List<ImageLabel> =
+    suspend fun classify(uri: Uri): List<ImageLabel> =
         suspendCancellableCoroutine { cont ->
             try {
                 val image = InputImage.fromFilePath(context, uri)
@@ -40,3 +42,4 @@ class PlantClassifier {
         labeler.close()
     }
 }
+

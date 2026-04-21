@@ -46,8 +46,6 @@ fun MapScreen(
     val isWalking by walkViewModel.isWalking.collectAsState()
     val routePoints by mapViewModel.routePoints.collectAsState()
     val currentLocation by mapViewModel.currentLocation.collectAsState()
-
-    // 🔥 FIX: pakota initialValue ettei jää "tyhjäksi"
     val spots by mapViewModel.spots.collectAsState(initial = emptyList())
 
     var selectedSpot by remember { mutableStateOf<NatureSpot?>(null) }
@@ -103,10 +101,10 @@ fun MapScreen(
             modifier = Modifier.fillMaxSize(),
             update = { map ->
 
-                // ❗ EI clear() → vain päivitys
-                map.overlays.removeAll { it is Marker || it is Polyline }
 
-                // reitti
+                map.overlays.removeAll { it is Polyline }
+
+                // Reitti
                 if (routePoints.size > 1) {
                     val line = Polyline().apply {
                         setPoints(routePoints)
@@ -115,7 +113,7 @@ fun MapScreen(
                     map.overlays.add(line)
                 }
 
-                // pinnit
+                // Pinnit
                 spots.forEach { spot ->
                     if (spot.latitude != 0.0 && spot.longitude != 0.0) {
 

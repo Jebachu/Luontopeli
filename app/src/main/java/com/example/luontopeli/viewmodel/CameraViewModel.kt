@@ -1,6 +1,7 @@
 package com.example.luontopeli.viewmodel
 
 import android.content.Context
+import android.net.Uri
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.core.content.ContextCompat
@@ -9,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.luontopeli.data.local.entity.NatureSpot
 import com.example.luontopeli.data.repository.NatureSpotRepository
 import com.example.luontopeli.location.LocationManager
+import com.example.luontopeli.ml.PlantClassifier
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CameraViewModel @Inject constructor(
     private val repository: NatureSpotRepository,
-    private val locationManager: LocationManager
+    private val locationManager: LocationManager,
+    private val classifier: PlantClassifier   // 🔥 LISÄTTY
 ) : ViewModel() {
 
     private val _isLoading = MutableStateFlow(false)
@@ -51,13 +54,18 @@ class CameraViewModel @Inject constructor(
 
                     viewModelScope.launch {
 
+                        // 🔥 ML KIT TUNNISTUS LISÄTTY
+                        val uri = Uri.fromFile(file)
+                        val labels = classifier.classify(uri)
+                        val bestLabel = labels.maxByOrNull { it.confidence }?.text ?: "Unknown"
+
                         val location = locationManager.currentLocation.value
 
                         val lat = location?.latitude ?: 0.0
                         val lon = location?.longitude ?: 0.0
 
                         val spot = NatureSpot(
-                            name = "Luontokohde",
+                            name = bestLabel,              // 🔥 TÄSSÄ OLI "Luontokohde"
                             latitude = lat,
                             longitude = lon,
                             imagePath = file.absolutePath
